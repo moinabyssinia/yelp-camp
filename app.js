@@ -23,18 +23,25 @@ const app = express();
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
-// routes
+/* routes */
+// home
 app.get('/', (req, res) => {
     res.render('home')
 })
 
-app.get('/makecampground', async (req, res) => {
-    const camp = new Campground(
-        {title : 'Oviedo',
-         description: 'cheap camping'
-        });
-    await camp.save();
-    res.send(camp);
+// all campgrounds listed
+app.get('/campgrounds', async (req, res) => {
+    const camps = await Campground.find({});
+    // console.log(camps);
+    res.render('./campgrounds/index', { camps });
+})
+
+// show details of each camp
+app.get('/campgrounds/:id', async (req, res) => {
+    const { id } = req.params;
+    console.log( id );
+    const camp = await Campground.findById({ _id : id });
+    res.send(camp)
 })
 
 app.listen(5000, () => {
