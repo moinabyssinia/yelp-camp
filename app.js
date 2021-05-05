@@ -23,6 +23,9 @@ const app = express();
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
+// to be able to parse the body of the form
+app.use(express.urlencoded({extended : true}))
+
 /* routes */
 // home
 app.get('/', (req, res) => {
@@ -36,12 +39,24 @@ app.get('/campgrounds', async (req, res) => {
     res.render('./campgrounds/index', { camps });
 })
 
+// serve the form to add new campgrounds
+app.get('/campgrounds/new', (req, res) => {
+    res.render('campgrounds/new');
+})
+
+// get data from form and push to database - use parser from above
+app.post('/campgrounds', async (req, res) => {
+    const campground = new Campground(req.body.campground);
+    await campground.save();
+    res.redirect(`/campgrounds/${campground._id}`);
+})
+
 // show details of each camp
 app.get('/campgrounds/:id', async (req, res) => {
     const { id } = req.params;
     console.log( id );
     const camp = await Campground.findById({ _id : id });
-    res.send(camp)
+    res.render('campgrounds/show', { camp })
 })
 
 app.listen(5000, () => {
