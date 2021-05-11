@@ -1,7 +1,9 @@
 const express = require('express');
 const path = require('path');
 const mongoose = require('mongoose');
+const morgan = require('morgan');
 const Campground = require('./models/campground');
+
 
 // use this to override post with put
 const methodOverride = require('method-override');
@@ -30,6 +32,31 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(express.urlencoded({extended : true}))
 
 app.use(methodOverride('_method'));
+
+/* whatever function is there in app.use will be 
+   executed for every route 
+*/
+// app.use(morgan('dev')); // using the morgan middleware
+
+
+app.use((req, res, next) => {
+    console.log(req.method.toUpperCase(), req.path);
+    next();
+})
+
+/* app.use((req, res, next)=> {
+    console.log("this is my first middleware");
+    next();
+    console.log("first middleware after calling next()");
+})
+app.use((req, res, next)=> {
+    console.log("this is my second middleware");
+    next();
+})
+ */
+
+
+
 /* routes */
 // home
 app.get('/', (req, res) => {
